@@ -1,6 +1,6 @@
-# sample-BSDF
+# sample-bsdf
 
-My first Pollination app!
+An app to evaluate annual daylight metrics for a BSDF file.
 
 ## Quickstart
 
@@ -31,13 +31,13 @@ You can run the app locally inside Docker to ensure the app will work fine after
 You need to install Docker on your machine in order to be able to run this command
 
 ```
-> pollination-apps run app mikkel --name "sample-BSDF"
+> pollination-apps run app username --name "sample-bsdf"
 ```
 
 ## Deploy to Pollination
 
 ```
-> pollination-apps deploy app --name "sample-BSDF" --public --api-token "Your api token from Pollination"
+> pollination-apps deploy app --name "sample-bsdf" --public --api-token "Your api token from Pollination"
 ```
 
 
@@ -72,6 +72,6 @@ In order to configure github actions to deploy your app you will need to:
 
    **Note** that the commit messages with only `fix` and `feat` type will trigger a deployment to Pollination.
 
-Github actions will then package and deploy your code to an app called [sample-BSDF](https://app.pollination.cloud/mikkel/applications/sample-bsdf)
+Github actions will then package and deploy your code to an app called [sample-bsdf](https://app.pollination.cloud/mikkel/applications/sample-bsdf)
 
 
