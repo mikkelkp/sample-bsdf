@@ -46,7 +46,7 @@ jobs:
     name: Release on Github
     runs-on: ubuntu-latest
     needs: test-docker
-    if: github.ref == 'refs/heads/master' && github.event.repository.owner.name == 'mikkel'
+    if: github.ref == 'refs/heads/master' && github.event.repository.owner.name == 'mikkelkp'
     steps:
       - uses: actions/checkout@v2
 
@@ -76,7 +76,7 @@ jobs:
     name: Deploy to Pollination
     runs-on: ubuntu-latest
     needs: [release-on-github]
-    if: ${{github.ref == 'refs/heads/master' && github.event.repository.owner.name == 'mikkel' && contains(needs.release-on-github.outputs.tag, '.')}}
+    if: ${{github.ref == 'refs/heads/master' && github.event.repository.owner.name == 'mikkelkp' && contains(needs.release-on-github.outputs.tag, '.')}}
     steps:
       - uses: actions/checkout@v2
         with:
