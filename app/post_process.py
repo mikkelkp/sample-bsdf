@@ -1,6 +1,7 @@
 """Post-processing functions."""
 import streamlit as st
 from pathlib import Path
+import pandas as pd
 import numpy as np
 import shutil
 
@@ -67,3 +68,59 @@ def visualization_set(grid_data_path: Path) -> Path:
         )
 
     return Path(vtkjs_file)
+    
+
+def bsdf_metrics_df(bsdf: str):
+    da_array = np.loadtxt(st.session_state.metrics.joinpath(bsdf, 'da', 'Room.da'))
+    cda_array = np.loadtxt(st.session_state.metrics.joinpath(bsdf, 'cda', 'Room.cda'))
+    udi_array = np.loadtxt(st.session_state.metrics.joinpath(bsdf, 'udi', 'Room.udi'))
+    udi_l_array = np.loadtxt(st.session_state.metrics.joinpath(bsdf, 'udi_lower', 'Room.udi'))
+    udi_u_array = np.loadtxt(st.session_state.metrics.joinpath(bsdf, 'udi_upper', 'Room.udi'))
+    data = {
+        'sDA': [(da_array >= 50).sum() / da_array.size * 100],
+        'Average DA': [np.mean(da_array)],
+        'Average cDA': [np.mean(cda_array)],
+        'Average UDI': [np.mean(udi_array)],
+        'Average UDI (lower)': [np.mean(udi_l_array)],
+        'Average UDI (upper)': [np.mean(udi_u_array)]
+    }
+    df = pd.DataFrame(data, index=[bsdf])
+    new_df = st.session_state.metrics_df.append(df)
+    st.session_state.metrics_df = new_df
+
+
+def clear_df():
+    da_array = np.loadtxt(st.session_state.metrics.joinpath('clear', 'da', 'Room.da'))
+    cda_array = np.loadtxt(st.session_state.metrics.joinpath('clear', 'cda', 'Room.cda'))
+    udi_array = np.loadtxt(st.session_state.metrics.joinpath('clear', 'udi', 'Room.udi'))
+    udi_l_array = np.loadtxt(st.session_state.metrics.joinpath('clear', 'udi_lower', 'Room.udi'))
+    udi_u_array = np.loadtxt(st.session_state.metrics.joinpath('clear', 'udi_upper', 'Room.udi'))
+
+    data = {
+        'sDA': [(da_array >= 50).sum() / da_array.size * 100],
+        'Average DA': [np.mean(da_array)],
+        'Average cDA': [np.mean(cda_array)],
+        'Average UDI': [np.mean(udi_array)],
+        'Average UDI (lower)': [np.mean(udi_l_array)],
+        'Average UDI (upper)': [np.mean(udi_u_array)]
+    }
+    df = pd.DataFrame(data, index=['clear'])
+
+    return df
+
+
+def color_active_bsdf(val):
+    return ['background-color: rgba(0, 255, 0, 0.1)' if val.name == st.session_state.active_bsdf else '' for i in val]
+
+
+def clear_df_s():
+    df = clear_df()
+    df_s = df.style.apply(color_active_bsdf, axis=1)
+    
+    return df_s
+
+
+def update_metrics_df_s():
+    df = st.session_state.metrics_df
+    df_s = df.style.apply(color_active_bsdf, axis=1)
+    st.session_state.metrics_df_s = df_s
