@@ -1,8 +1,10 @@
 """Initialize sessions state variables."""
 import streamlit as st
+import pandas as pd
 from pathlib import Path
 
 from honeybee.model import Model
+from post_process import clear_df, clear_df_s
 
 
 def initialize():
@@ -43,3 +45,9 @@ def initialize():
         st.session_state.max_t = 3000
     if 'active_grid_data' not in st.session_state:
         st.session_state.active_grid_data = 'da'
+
+    # metrics dataframe
+    if 'metrics_df' not in st.session_state:
+        st.session_state.metrics_df = clear_df()
+    if 'metrics_df_s' not in st.session_state:
+        st.session_state.metrics_df_s = clear_df_s()
