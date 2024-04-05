@@ -4,7 +4,6 @@ name: CI
 on: [push, pull_request]
 
 jobs:
-  
 
   generate-app-name:
     name: Generate App name
@@ -29,7 +28,6 @@ jobs:
       app-name: ${{ steps.generate_app_name.outputs.app-name }}
 
 
-
   test-docker:
     name: Test Docker build
     runs-on: ubuntu-latest
@@ -40,7 +38,6 @@ jobs:
       - name: Build docker image
         run: docker build app --tag ${{needs.generate-app-name.outputs.app-lowercase}}:latest
 
- 
 
   release-on-github:
     name: Release on Github
@@ -110,4 +107,3 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           POLLINATION_TOKEN: ${{ secrets.POLLINATION_TOKEN }}
           TAG: ${{ steps.get-context.outputs.tag }}
-

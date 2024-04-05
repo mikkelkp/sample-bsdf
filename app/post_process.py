@@ -1,11 +1,11 @@
 """Post-processing functions."""
-import streamlit as st
 from pathlib import Path
+import shutil
+import streamlit as st
 import pandas as pd
 import numpy as np
-import shutil
 
-from honeybee_radiance_postprocess.results import Results
+from honeybee_radiance_postprocess.results.annual_daylight import AnnualDaylight
 from honeybee_display.model import model_to_vis_set
 from ladybug_vtk.visualization_set import VisualizationSet as VTKVisualizationSet
 
@@ -21,10 +21,12 @@ def copy_results_folder(bsdf: str, array: np.ndarray) -> Path:
         Path of a new results folder.
     """
     target_folder = st.session_state.data.joinpath(bsdf)
-    shutil.copytree(st.session_state.default_results, target_folder)
-    output = target_folder.joinpath('ApertureGroup_38fc081f/0_ApertureGroup_38fc081f/total', 'Room.npy')
+    if not target_folder.exists():
+        shutil.copytree(st.session_state.default_results, target_folder)
+    output = target_folder.joinpath(
+        'ApertureGroup_38fc081f/0_ApertureGroup_38fc081f/total', 'Room.npy')
     np.save(output, array)
-    
+
     return target_folder
 
 
@@ -37,13 +39,13 @@ def annual_metrics(results_folder: Path) -> Path:
     Returns:
         Path to a metrics folder.
     """
-    results = Results(results_folder)
+    results = AnnualDaylight(results_folder)
     target_folder = st.session_state.metrics.joinpath(results_folder.name)
     results.annual_metrics_to_folder(
         target_folder, threshold=st.session_state.threshold,
         min_t=st.session_state.min_t, max_t=st.session_state.max_t
     )
-    
+
     return target_folder
 
 
@@ -68,7 +70,7 @@ def visualization_set(grid_data_path: Path) -> Path:
         )
 
     return Path(vtkjs_file)
-    
+
 
 def bsdf_metrics_df(bsdf: str):
     da_array = np.loadtxt(st.session_state.metrics.joinpath(bsdf, 'da', 'Room.da'))
@@ -85,7 +87,7 @@ def bsdf_metrics_df(bsdf: str):
         'Average UDI (upper)': [np.mean(udi_u_array)]
     }
     df = pd.DataFrame(data, index=[bsdf])
-    new_df = st.session_state.metrics_df.append(df)
+    new_df = pd.concat([st.session_state.metrics_df, df])
     st.session_state.metrics_df = new_df
 
 
@@ -116,7 +118,7 @@ def color_active_bsdf(val):
 def clear_df_s():
     df = clear_df()
     df_s = df.style.apply(color_active_bsdf, axis=1)
-    
+
     return df_s
 
 
